@@ -1,5 +1,6 @@
 #include "ExplosionEffect.h"
 #include "DxLib.h"
+#include "easefunction.h"
 
 
 namespace
@@ -7,7 +8,8 @@ namespace
 	const float PARTICLE_LIFE = 1.0f; //パーティクルの寿命(秒)
 	const float PARTICLE_RADIUS = 1.5f; //パーティクルの半径
 	const float PARTICLE_SPEED[3] = { 50.0f, 80.0f, 120.0f }; //パーティクルの速度
-	const float PARTICLE_DECAY = 0.95f; //パーティクルの減衰率
+	const float PARTICLE_DECAY = 0.95f; //パーティクルの速さの減衰率
+	const float PARTICLE_LIFE_FADE_START = PARTICLE_LIFE/2.0f; //寿命の半分から色を薄くする
 }
 
 
@@ -25,6 +27,7 @@ ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 		particle.vel = { 0.0f, 0.0f };
 		particle.life = PARTICLE_LIFE;//寿命3秒
 		particle.radius = PARTICLE_RADIUS;//半径5.0f
+		particle.alpha = 1.0f;//不透明度1.0f
 
 		float angle_rad = (float)GetRand(360) * (Math2D::PI / 180.0f);
 		Vector2D direction = Math2D::FromAngle(angle_rad);
@@ -56,13 +59,30 @@ void ExplosionEffect::Update()
 			particle.Offset = Math2D::Add(particle.Offset, Math2D::Mul(particle.vel, dt));
 
 			//速度減衰
-			particle.vel = Math2D::Mul(particle.vel, PARTICLE_DECAY);
+			//particle.vel = Math2D::Mul(particle.vel, PARTICLE_DECAY);
+			//イージング使って、早さを変更してみて！
+
 
 			//寿命減少
 			particle.life -= dt;
 			if (particle.life < 0.0f)
 				particle.life = 0.0f;
 		}
+
+		//不透明度の更新
+		//if (particle.life < PARTICLE_LIFE_FADE_START)
+		//{
+		//	particle.alpha = particle.life / PARTICLE_LIFE_FADE_START;
+		//}
+		//else
+		//{
+		//	particle.alpha = 1.0f;
+		//}
+
+		float lifeRatio = 1.0f - particle.life / PARTICLE_LIFE;
+		particle.alpha = 1.0f - Direct3D::EaseFunc["OutBounce"](lifeRatio);
+		
+
 	}
 
 	//全パーティクルが寿命切れならエフェクト終了
@@ -84,10 +104,15 @@ void ExplosionEffect::Draw()
 			//パーティクルの描画
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
+			int particleColor = GetColor(
+				(int)(255 * particle.alpha),
+				(int)(255 * particle.alpha),
+				(int)(255 * particle.alpha)
+			);
 			DrawCircle((int)screenPos.x,
 						(int)screenPos.y,
 						particle.radius,
-						GetColor(255,255, 255));
+						particleColor);
 		}
 	}
 
