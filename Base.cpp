@@ -6,9 +6,10 @@ Base::Base()
 }
 
 Base::Base(const Vector2D& pos, const Vector2D& vel,
-	  unsigned int color, const std::string& objName)
-	:pos_(pos), vel_(vel), Color_(color), objName_(objName)
+	  unsigned int color)
+	:pos_(pos), vel_(vel), Color_(color)
 {
+	SetObjType(UNKNOWN);
 }
 
 Base::~Base()

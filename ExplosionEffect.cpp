@@ -1,5 +1,6 @@
 #include "ExplosionEffect.h"
 #include "DxLib.h"
+#include <algorithm>
 #include "easefunction.h"
 
 
@@ -16,8 +17,11 @@ namespace
 ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 	:Base(pos, { 0.0f, 0.0f }, GetColor(255, 255, 255))
 {
+	SetObjType(OBJ_TYPE::EFFECT);
 	particles_.clear();
 	isFinished_ = false;
+
+
 
 	//パーティクル1個の初期化
 	for (int i = 0; i < particleCount; i++)
@@ -79,8 +83,8 @@ void ExplosionEffect::Update()
 		//	particle.alpha = 1.0f;
 		//}
 
-		float lifeRatio = 1.0f - particle.life / PARTICLE_LIFE;
-		particle.alpha = 1.0f - Direct3D::EaseFunc["OutBounce"](lifeRatio);
+		float lifeRatio = std::clamp(1.0f - particle.life / PARTICLE_LIFE, 0.0f, 1.0f);
+		particle.alpha = 1.0f - Direct3D::EaseFunc["InOutExpo"](lifeRatio);
 		
 
 	}

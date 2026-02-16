@@ -6,6 +6,7 @@ Bullet::Bullet(const Vector2D& pos, const Vector2D& vel,
 	unsigned int color, float radius, float life)
 	:Base(pos, vel, color), radius_(radius), life_(life)
 {
+	SetObjType(BULLET);
 }
 
 void Bullet::Update()

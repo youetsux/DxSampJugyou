@@ -24,6 +24,7 @@ Player::Player()
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,1 };
 	vertex_[2] = { 0,2 };
+	SetObjType(PLAYER);
 }
 
 Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
@@ -34,6 +35,7 @@ Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	vertex_[1] = { 0, 0 }; //０で初期化
 	vertex_[2] = { 0, 0 }; //０で初期化
 	angle_ = 0.0f; //０で初期化
+	SetObjType(PLAYER);
 }
 
 Player::~Player()
