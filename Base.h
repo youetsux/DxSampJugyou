@@ -1,16 +1,17 @@
 #pragma once
 #include "Math2D.h"
+#include <string>
 
 class Base
 {
 public:
 	Base();
-	Base(const Vector2D& pos, const Vector2D& vel, unsigned int color);
+	Base(const Vector2D& pos, const Vector2D& vel, unsigned int color, const std::string& objName);
 	~Base();
-	virtual void Update(); //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
-	virtual void Draw(); //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
+	virtual void Update(); //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
+	virtual void Draw(); //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
 public:
-	//ƒZƒbƒ^[AƒQƒbƒ^[@ƒCƒ“ƒ‰ƒCƒ“’è‹`
+	//ã‚»ãƒƒã‚¿ãƒ¼ã€ã‚²ãƒƒã‚¿ãƒ¼ã€€ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³å®šç¾©
 	void SetPos(const Vector2D& pos) { pos_ = pos; }
 	Vector2D GetPos() const { return pos_; }
 	void SetVel(const Vector2D& vel) { vel_ = vel; }
@@ -18,8 +19,9 @@ public:
 	void GetCharaColor(const unsigned int color) { Color_ = color; }
 	unsigned int GetCharaColor() const { return Color_; }
 protected:
-	Vector2D pos_;//ˆÊ’u
-	Vector2D vel_;//‘¬“x
-	unsigned int Color_;//F •„†‚È‚µ®”
+	Vector2D pos_;//ä½ç½®
+	Vector2D vel_;//é€Ÿåº¦
+	unsigned int Color_;//è‰² ç¬¦å·ãªã—æ•´æ•°
+	std::string objName_;//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¨®é¡
 };
 

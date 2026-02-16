@@ -1,3 +1,4 @@
+#include "Base.h"
 #include "Stage.h"
 #include "Math2D.h"
 #include "Player.h"
@@ -24,8 +25,29 @@ namespace
 	Player* player = nullptr;
 	std::vector<Bullet*> bullets; //弾丸の保管庫
 	std::vector<Enemy*> enemies; //敵の保管庫
-	std::vector<ExplosionEffect*> effects; //エフェクトの保管庫
-	
+	//std::vector<ExplosionEffect*> effects; //エフェクトの保管庫
+
+	std::vector<Base*> objects; //全てのオブジェクトの保管庫
+	//オブジェクトの保管庫にオブジェクトを追加する関数
+	void AddObject(Base* obj)
+	{
+		objects.push_back(obj);
+	}
+
+	void UpdateAllObjects()
+	{
+		for (auto& obj : objects)
+		{
+			obj->Update();
+		}
+	}
+	void DrawAllObjects()
+	{
+		for (auto& obj : objects)
+		{
+			obj->Draw();
+		}
+	}
 }
 
 
@@ -41,14 +63,18 @@ void Stage::Initialize()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR,
 		                START_DIR, START_RADIUS, START_OMEGA);
-	
+
+	AddObject(player);
+
 	enemies.clear();
 	enemies.reserve(ENEMY_NUM);
+
 	//最初の敵を生成
 	for (int i = 0; i < ENEMY_NUM; i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
 		enemies.push_back(e);
+		AddObject(e);
 	}
 }
 
@@ -81,8 +107,9 @@ void Stage::Update()
 				Enemy::Size enemySize = enemies[i]->GetSize();
 				if (enemySize == Enemy::Size::SMALL)
 				{
-					ExplosionEffect* effect = new ExplosionEffect(enemyPos);
-					effects.push_back(effect);
+					ExplosionEffect* effect = new ExplosionEffect(enemyPos, "Effect");
+					//effects.push_back(effect);
+					AddObject(effect);
 
 				}
 				else if (enemySize == Enemy::Size::MEDIUM)
@@ -96,6 +123,7 @@ void Stage::Update()
 						e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
 						//e->SetVel(Vector2D((float)(GetRand(200) - 100), (float)(GetRand(200) - 100)));
 						enemies.push_back(e);
+						AddObject(e);
 					}
 				}
 				else if (enemySize == Enemy::Size::LARGE)
@@ -107,6 +135,7 @@ void Stage::Update()
 						//速さの設定は必要
 						e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
 						enemies.push_back(e);
+						AddObject(e);
 					}
 				}
 
@@ -117,25 +146,8 @@ void Stage::Update()
 
 	//賞味期限切れの弾を消す
 	DeleteBullet();
-	for (int i = 0;i < enemies.size();i++)
-	{
-		enemies[i]->Update();//敵の更新
-	}
-	
-	player->Update();
-	if (!bullets.empty())
-	{
-		for (auto& itr : bullets)
-		{
-			itr->Update();
-		}
-	}
 
-	//エフェクトの更新
-	for(auto& effect : effects)
-	{
-		effect->Update();
-	}
+	UpdateAllObjects();
 
 	//Zキーが押されたら弾丸を生成
 	if (Input::IsKeyDown(KEY_INPUT_Z))
@@ -146,27 +158,7 @@ void Stage::Update()
 
 void Stage::Draw()
 {
-	for (int i = 0;i < enemies.size();i++)
-	{
-		if (enemies[i]->IsAlive())
-			enemies[i]->Draw();//敵の描画
-	}
-
-	if (!bullets.empty())
-	{
-		for (auto& itr : bullets)
-		{
-			itr->Draw();
-		}
-	}
-
-	//エフェクトの描画
-	for(auto& effect : effects)
-	{
-		effect->Draw();
-	}
-
-	player->Draw();
+	DrawAllObjects();
 }
 
 void Stage::Release()
@@ -207,4 +199,5 @@ void Stage::ShootBullet()
 
 	Bullet* b = new Bullet(pos, v, bcol, r, life);
 	bullets.push_back(b);
+	AddObject(b);
 }

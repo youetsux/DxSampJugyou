@@ -5,16 +5,16 @@ class Player :
     public Base
 {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Player();
 	Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 		   const Vector2D& dir, float r, float omega);
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~Player();
-	//OverRide—Ş
-	void Update() override; //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
-	void Draw() override; //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
-public://ƒZƒbƒ^[ƒQƒbƒ^[‚Í‘S•”ƒCƒ“ƒ‰ƒCƒ“‚Å‘‚¢‚½‚æ
+	//OverRideé¡
+	void Update() override; //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
+	void Draw() override; //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
+public://ã‚»ãƒƒã‚¿ãƒ¼ã‚²ãƒƒã‚¿ãƒ¼ã¯å…¨éƒ¨ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ã§æ›¸ã„ãŸã‚ˆ
 	void SetDirVec(const Vector2D& dir) { dir_ = dir; }
 	Vector2D GetDirVec() { return dir_; }
 	void SetRadius(float r) { radius_ = r; }
@@ -23,14 +23,16 @@ public://ƒZƒbƒ^[ƒQƒbƒ^[‚Í‘S•”ƒCƒ“ƒ‰ƒCƒ“‚Å‘‚¢‚½‚æ
 	float GetOmega() { return omega_; }
 	void SetAngle(float angle) { angle_ = angle; }
 	float GetAngle() { return angle_; }
+	bool IsAlive() { return isAlive_; }
 private:
-	//“Æ©‚Ìƒƒ“ƒo
-	//©•ª‚ÌŒü‚«iƒxƒNƒgƒ‹j
-	//3ŠpŒ`‚Ì3“_‚ÌÀ•W
-	Vector2D dir_; //©•ª‚ÌŒü‚«ƒxƒNƒgƒ‹
-	float radius_; //”¼Œa
-	Vector2D vertex_[3]; //3ŠpŒ`‚Ì’¸“_À•W
-	float omega_; //‰ñ“]‘¬“x(Šp‘¬“x)
-	float angle_; //Œ»İ‚Ì‰ñ“]Šp
+	//ç‹¬è‡ªã®ãƒ¡ãƒ³ãƒ
+	//è‡ªåˆ†ã®å‘ãï¼ˆãƒ™ã‚¯ãƒˆãƒ«ï¼‰
+	//3è§’å½¢ã®3ç‚¹ã®åº§æ¨™
+	Vector2D dir_; //è‡ªåˆ†ã®å‘ããƒ™ã‚¯ãƒˆãƒ«
+	float radius_; //åŠå¾„
+	Vector2D vertex_[3]; //3è§’å½¢ã®é ‚ç‚¹åº§æ¨™
+	float omega_; //å›è»¢é€Ÿåº¦(è§’é€Ÿåº¦)
+	float angle_; //ç¾åœ¨ã®å›è»¢è§’
+	bool isAlive_; //ç”Ÿå­˜ãƒ•ãƒ©ã‚° true:ç”Ÿãã¦ã‚‹ false:æ­»ã‚“ã§ã‚‹
 };
 

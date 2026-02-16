@@ -1,4 +1,4 @@
-﻿#include "Enemy.h"
+#include "Enemy.h"
 #include "globals.h"
 #include <DxLib.h>
 #include "Math2D.h"
@@ -72,6 +72,9 @@ Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
 
 void Enemy::Update()
 {
+	if(IsAlive() == false)
+		return; //死んでたらスルー
+
 	float dt = GetDeltaTime();
 	//pos_.x = pos_.x + vel_.x * dt;
 	//pos_.y = pos_.y + vel_.y * dt;
@@ -86,6 +89,8 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
+	if(IsAlive() == false)
+		return; //死んでたらスルー
 	//スクリーン座標に変換した頂点配列を作る
 	std::vector<Vector2D> scrVertex(segment_);
 

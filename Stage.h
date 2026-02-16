@@ -1,5 +1,8 @@
-﻿#pragma once
+#pragma once
 #include <vector>
+
+
+
 // 前方宣言
 class Player;
 class Enemy;
