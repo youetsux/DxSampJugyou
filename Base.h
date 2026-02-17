@@ -4,7 +4,7 @@
 
 enum OBJ_TYPE
 {
-	UNKNOWN = 0,
+	UNKNOWN,
 	PLAYER,
 	ENEMY,
 	BULLET,
@@ -29,6 +29,7 @@ public:
 	Vector2D GetVel() const { return vel_; }
 	void GetCharaColor(const unsigned int color) { Color_ = color; }
 	unsigned int GetCharaColor() const { return Color_; }
+	//setterとgetterを追加
 	void SetObjType(const OBJ_TYPE& objtype) { objType = objtype; }
 	OBJ_TYPE GetType() const { return objType; }
 protected:

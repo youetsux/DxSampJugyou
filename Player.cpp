@@ -29,7 +29,7 @@ Player::Player()
 
 Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	           const Vector2D& dir, float r, float omega)
-	:Base(pos,vel,color), dir_(dir), radius_(r), omega_(omega)
+	:Base(pos, vel, color), dir_(dir), radius_(r), omega_(omega), isAlive_(true)
 {
 	vertex_[0] = { 0, 0 }; //０で初期化
 	vertex_[1] = { 0, 0 }; //０で初期化

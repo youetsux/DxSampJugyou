@@ -87,24 +87,62 @@ void Stage::Update()
 	std::vector<Enemy*> aliveEnemies;
 	std::vector<Bullet*> aliveBullets;
 
-	aliveEnemies.clear();
-	aliveBullets.clear();
+	aliveEnemies.clear();//念のため、毎フレームaliveEnemiesを空にする
+	aliveBullets.clear();//念のため、毎フレームaliveBulletsを空にする
 
-	for (auto& itr : objects)
+	//for(int i=0; i < objects.size(); i++)
+	for (auto& obj : objects)
 	{
-		if (itr->GetType() == ENEMY)
+		if (obj->GetType() == OBJ_TYPE::ENEMY)
 		{
-			Enemy* e = (Enemy *)(itr);
-			if (e->IsAlive())
+			//baseクラスのポインタを敵クラスのポインタに変換してる
+			Enemy* e = (Enemy *)obj;
+			if (e->IsAlive()) {
 				aliveEnemies.push_back(e);
+			}
 		}
-		else if (itr->GetType() == BULLET)
+		else if(obj->GetType() == OBJ_TYPE::BULLET)
 		{
-			Bullet* b = (Bullet *)(itr);
-			if (!b->IsDead())
+			//baseクラスのポインタを弾クラスのポインタに変換してる
+			Bullet* b = (Bullet *)obj;
+			if (!b->IsDead()) {
 				aliveBullets.push_back(b);
+			}
 		}
 	}
+	//for(int i=0;i<aliveBullets.size();i++)
+	for(auto& bullet: aliveBullets)
+	{
+		for (auto& enemy : aliveEnemies)
+		{
+			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
+			if (dist < enemy->GetCollisionRadius())
+			{
+				//当たった
+				enemy->Dead();//敵を消す(生存フラグをfalseに）
+				bullet->Dead();//弾も消す
+			}
+		}
+	}
+
+
+
+
+	//for (auto& itr : objects)
+	//{
+	//	if (itr->GetType() == ENEMY)
+	//	{
+	//		Enemy* e = (Enemy *)(itr);
+	//		if (e->IsAlive())
+	//			aliveEnemies.push_back(e);
+	//	}
+	//	else if (itr->GetType() == BULLET)
+	//	{
+	//		Bullet* b = (Bullet *)(itr);
+	//		if (!b->IsDead())
+	//			aliveBullets.push_back(b);
+	//	}
+	//}
 
 	//for (auto& itr : bullets)
 	//{
@@ -160,7 +198,6 @@ void Stage::Update()
 	//					AddObject(e);
 	//				}
 	//			}
-
 	//			itr->Dead();//弾も消す
 	//		}
 	//	}
@@ -197,18 +234,46 @@ void Stage::Release()
 void Stage::DeleteBullet()
 {
 	//賞味期限切れの弾を消す
-	for (auto it = bullets.begin(); it != bullets.end(); )
+	//まず、箱の中身を確認して、死んでる弾があったらdeleteする（箱は残るので、nullptrを入れておく）
+	//for (int i = 0;i < objects.size();i++)
+	for (auto& itr : objects)
 	{
-		if ((*it)->IsDead() == true)
+		if(itr->GetType() == OBJ_TYPE::BULLET)
 		{
-			it = bullets.erase(it);
+			Bullet* b = (Bullet *)(itr);
+			if (b->IsDead())
+			{
+				delete b;
+				itr = nullptr; //ポインタをnullptrにしておく
+			}
+		}
+	}
+	//次に、箱の中身を確認して、nullptrがあったら箱から消す(箱自体を詰める）
+	for(auto it = objects.begin(); it != objects.end(); )
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
 		}
 		else
 		{
 			it++;
 		}
-
 	}
+
+
+	//for (auto it = bullets.begin(); it != bullets.end(); )
+	//{
+	//	if ((*it)->IsDead() == true)
+	//	{
+	//		it = bullets.erase(it);
+	//	}
+	//	else
+	//	{
+	//		it++;
+	//	}
+
+	//}
 }
 
 void Stage::ShootBullet()
