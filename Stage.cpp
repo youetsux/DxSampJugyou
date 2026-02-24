@@ -23,8 +23,8 @@ namespace
 	const unsigned int ENEMY_MAX = 100; //敵の最大数
 	const unsigned int ENEMY_NUM = 10; //最初に出現する敵の数
 	Player* player = nullptr;
-	std::vector<Bullet*> bullets; //弾丸の保管庫
-	std::vector<Enemy*> enemies; //敵の保管庫
+	//std::vector<Bullet*> bullets; //弾丸の保管庫
+	//std::vector<Enemy*> enemies; //敵の保管庫
 	//std::vector<ExplosionEffect*> effects; //エフェクトの保管庫
 
 	std::vector<Base*> objects; //全てのオブジェクトの保管庫
@@ -66,14 +66,14 @@ void Stage::Initialize()
 
 	AddObject(player);
 
-	enemies.clear();
-	enemies.reserve(ENEMY_NUM);
+	//enemies.clear();
+	//enemies.reserve(ENEMY_NUM);
 
 	//最初の敵を生成
 	for (int i = 0; i < ENEMY_NUM; i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
-		enemies.push_back(e);
+		//enemies.push_back(e);
 		AddObject(e);
 	}
 }
@@ -120,6 +120,10 @@ void Stage::Update()
 			{
 				//当たった
 				enemy->Dead();//敵を消す(生存フラグをfalseに）
+				//			//TODO:
+				//分裂の処理をここでやりたい
+				//大か中か小かを判定して
+				//大なら中を2~4つ、中なら小を2~4つ、小なら消してエフェクト生成
 				bullet->Dead();//弾も消す
 			}
 		}
@@ -143,7 +147,6 @@ void Stage::Update()
 	//			aliveBullets.push_back(b);
 	//	}
 	//}
-
 	//for (auto& itr : bullets)
 	//{
 	//	for (int i = 0;i < enemies.size();i++)
@@ -205,7 +208,8 @@ void Stage::Update()
 
 	//賞味期限切れの弾を消す
 	DeleteBullet();
-
+	//死んでる敵を消す
+	DeleteEnemy();
 	UpdateAllObjects();
 
 	//Zキーが押されたら弾丸を生成
@@ -222,13 +226,13 @@ void Stage::Draw()
 
 void Stage::Release()
 {
-	if (player != nullptr)
-		delete player;
-	for (int i = 0;i < enemies.size();i++)
-	{
-		if (enemies[i] != nullptr)
-			delete enemies[i];
-	}
+	//if (player != nullptr)
+	//	delete player;
+	//for (int i = 0;i < enemies.size();i++)
+	//{
+	//	if (enemies[i] != nullptr)
+	//		delete enemies[i];
+	//}
 }
 
 void Stage::DeleteBullet()
@@ -240,6 +244,8 @@ void Stage::DeleteBullet()
 	{
 		if(itr->GetType() == OBJ_TYPE::BULLET)
 		{
+			//base->継承クラスの時は、ちゃんと継承クラスのポインタに変換してあげないと、継承クラスのメンバ関数は呼び出せない
+			//継承クラス→baseクラスの変換は暗黙的に行われる
 			Bullet* b = (Bullet *)(itr);
 			if (b->IsDead())
 			{
@@ -276,6 +282,35 @@ void Stage::DeleteBullet()
 	//}
 }
 
+void Stage::DeleteEnemy()
+{
+	//死んでる敵を消す
+	for (auto& itr : objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::ENEMY)
+		{
+			Enemy* b = (Enemy*)(itr);
+			if (b->IsAlive() == false)
+			{
+				delete b;
+				itr = nullptr; //ポインタをnullptrにしておく
+			}
+		}
+	}
+	//次に、箱の中身を確認して、nullptrがあったら箱から消す(箱自体を詰める）
+	for (auto it = objects.begin(); it != objects.end(); )
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
 void Stage::ShootBullet()
 {
 	Vector2D pos = player->GetPos();
@@ -285,6 +320,6 @@ void Stage::ShootBullet()
 	float life = 2.0f;
 
 	Bullet* b = new Bullet(pos, v, bcol, r, life);
-	bullets.push_back(b);
+	//bullets.push_back(b);
 	AddObject(b);
 }
