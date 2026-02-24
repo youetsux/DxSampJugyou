@@ -3,7 +3,7 @@
 
 
 
-// å‰æ–¹å®£è¨€
+// ‘O•ûéŒ¾
 class Player;
 class Enemy;
 
@@ -19,8 +19,10 @@ public:
 private:
 	//Player* player_;
 	//Enemy* enemy_;
+	long long gameScore_;
 	void DeleteBullet();
 	void DeleteEnemy();
+	void DeleteEffect();
 	void ShootBullet();
 };
 

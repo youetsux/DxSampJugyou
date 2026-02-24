@@ -7,20 +7,21 @@ class ExplosionEffect :
 {
 public:
 	ExplosionEffect(const Vector2D& pos, int particleCount = 20);
+	~ExplosionEffect() = default;
 	void Update() override;
 	void Draw() override;
 	bool IsFinished() const { return isFinished_; }
 
 	struct Particle
 	{
-		Vector2D Offset;//ä½ç½®
-		Vector2D vel;//é€Ÿåº¦
-		float life;//å¯¿å‘½
-		float radius;//åŠå¾„
-		float alpha;//ä¸é€æ˜åº¦
+		Vector2D Offset;//ˆÊ’u
+		Vector2D vel;//‘¬“x
+		float life;//õ–½
+		float radius;//”¼Œa
+		float alpha;//•s“§–¾“x
 	};
 private:
-	bool isFinished_;//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆçµ‚äº†ãƒ•ãƒ©ã‚°
-	std::vector<Particle> particles_;//ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç¾¤
+	bool isFinished_;//ƒGƒtƒFƒNƒgI—¹ƒtƒ‰ƒO
+	std::vector<Particle> particles_;//ƒp[ƒeƒBƒNƒ‹ŒQ
 };
 

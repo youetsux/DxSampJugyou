@@ -6,11 +6,11 @@
 
 namespace
 {
-	const float PARTICLE_LIFE = 1.0f; //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®å¯¿å‘½(ç§’)
-	const float PARTICLE_RADIUS = 1.5f; //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®åŠå¾„
-	const float PARTICLE_SPEED[3] = { 50.0f, 80.0f, 120.0f }; //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®é€Ÿåº¦
-	const float PARTICLE_DECAY = 0.95f; //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®é€Ÿã•ã®æ¸›è¡°çŽ‡
-	const float PARTICLE_LIFE_FADE_START = PARTICLE_LIFE/2.0f; //å¯¿å‘½ã®åŠåˆ†ã‹ã‚‰è‰²ã‚’è–„ãã™ã‚‹
+	const float PARTICLE_LIFE = 1.0f; //ƒp[ƒeƒBƒNƒ‹‚ÌŽõ–½(•b)
+	const float PARTICLE_RADIUS = 1.5f; //ƒp[ƒeƒBƒNƒ‹‚Ì”¼Œa
+	const float PARTICLE_SPEED[3] = { 50.0f, 80.0f, 120.0f }; //ƒp[ƒeƒBƒNƒ‹‚Ì‘¬“x
+	const float PARTICLE_DECAY = 0.95f; //ƒp[ƒeƒBƒNƒ‹‚Ì‘¬‚³‚ÌŒ¸Š—¦
+	const float PARTICLE_LIFE_FADE_START = PARTICLE_LIFE/2.0f; //Žõ–½‚Ì”¼•ª‚©‚çF‚ð”–‚­‚·‚é
 }
 
 
@@ -23,21 +23,21 @@ ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 
 
 
-	//ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«1å€‹ã®åˆæœŸåŒ–
+	//ƒp[ƒeƒBƒNƒ‹1ŒÂ‚Ì‰Šú‰»
 	for (int i = 0; i < particleCount; i++)
 	{
 		Particle particle;
 		particle.Offset = { 0.0f, 0.0f };
 		particle.vel = { 0.0f, 0.0f };
-		particle.life = PARTICLE_LIFE;//å¯¿å‘½3ç§’
-		particle.radius = PARTICLE_RADIUS;//åŠå¾„5.0f
-		particle.alpha = 1.0f;//ä¸é€æ˜Žåº¦1.0f
+		particle.life = PARTICLE_LIFE;//Žõ–½3•b
+		particle.radius = PARTICLE_RADIUS;//”¼Œa5.0f
+		particle.alpha = 1.0f;//•s“§–¾“x1.0f
 
 		float angle_rad = (float)GetRand(360) * (Math2D::PI / 180.0f);
 		Vector2D direction = Math2D::FromAngle(angle_rad);
 		particle.vel = Math2D::Mul(direction, PARTICLE_SPEED[GetRand(2)]);
 
-		//ãƒªã‚¹ãƒˆã«è¿½åŠ 
+		//ƒŠƒXƒg‚É’Ç‰Á
 		//particles_[0] = particle;
 		particles_.push_back(particle);
 	}
@@ -54,26 +54,26 @@ void ExplosionEffect::Update()
 
 	for (auto& particle : particles_)
 	{
-		//å¯¿å‘½ãŒæ®‹ã£ã¦ãŸã‚‰æ›´æ–°
+		//Žõ–½‚ªŽc‚Á‚Ä‚½‚çXV
 		if (particle.life > 0.0f)
 		{
-			allDead = false;//ã¾ã ç”Ÿãã¦ã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãŒã‚ã‚‹
+			allDead = false;//‚Ü‚¾¶‚«‚Ä‚éƒp[ƒeƒBƒNƒ‹‚ª‚ ‚é
 
-			//ä½ç½®æ›´æ–°
+			//ˆÊ’uXV
 			particle.Offset = Math2D::Add(particle.Offset, Math2D::Mul(particle.vel, dt));
 
-			//é€Ÿåº¦æ¸›è¡°
+			//‘¬“xŒ¸Š
 			//particle.vel = Math2D::Mul(particle.vel, PARTICLE_DECAY);
-			//ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ä½¿ã£ã¦ã€æ—©ã•ã‚’å¤‰æ›´ã—ã¦ã¿ã¦ï¼
+			//ƒC[ƒWƒ“ƒOŽg‚Á‚ÄA‘‚³‚ð•ÏX‚µ‚Ä‚Ý‚ÄI
 
 
-			//å¯¿å‘½æ¸›å°‘
+			//Žõ–½Œ¸­
 			particle.life -= dt;
 			if (particle.life < 0.0f)
 				particle.life = 0.0f;
 		}
 
-		//ä¸é€æ˜Žåº¦ã®æ›´æ–°
+		//•s“§–¾“x‚ÌXV
 		//if (particle.life < PARTICLE_LIFE_FADE_START)
 		//{
 		//	particle.alpha = particle.life / PARTICLE_LIFE_FADE_START;
@@ -89,8 +89,8 @@ void ExplosionEffect::Update()
 
 	}
 
-	//å…¨ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãŒå¯¿å‘½åˆ‡ã‚Œãªã‚‰ã‚¨ãƒ•ã‚§ã‚¯ãƒˆçµ‚äº†
-	if (allDead) //allDead == true ã¨åŒã˜
+	//‘Sƒp[ƒeƒBƒNƒ‹‚ªŽõ–½Ø‚ê‚È‚çƒGƒtƒFƒNƒgI—¹
+	if (allDead) //allDead == true ‚Æ“¯‚¶
 	{
 		isFinished_ = true;
 	}
@@ -99,13 +99,13 @@ void ExplosionEffect::Update()
 
 void ExplosionEffect::Draw()
 {
-	if (isFinished_) return;//çµ‚äº†ã—ã¦ãŸã‚‰æç”»ã—ãªã„
+	if (isFinished_) return;//I—¹‚µ‚Ä‚½‚ç•`‰æ‚µ‚È‚¢
 
 	for(auto& particle : particles_)
 	{
 		if (particle.life > 0.0f)
 		{
-			//ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æç”»
+			//ƒp[ƒeƒBƒNƒ‹‚Ì•`‰æ
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
 			int particleColor = GetColor(
@@ -121,5 +121,5 @@ void ExplosionEffect::Draw()
 	}
 
 }
-//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒã˜ã‚“ã‚ã‚Šæ¶ˆãˆã‚‹ã¨ã“ã‚ã‚’å®Ÿè£…
-//ã‚ã‚‹lifeã‹ã‚‰ã ã‚“ã ã‚“è‰²ã‚’è–„ãã—ã¦ã€ã•ã„ã”é»’ã«ãªã‚Œã°ã„ã„ã‚ˆã€‚
+//ƒGƒtƒFƒNƒg‚ª‚¶‚ñ‚í‚èÁ‚¦‚é‚Æ‚±‚ë‚ðŽÀ‘•
+//‚ ‚élife‚©‚ç‚¾‚ñ‚¾‚ñF‚ð”–‚­‚µ‚ÄA‚³‚¢‚²•‚É‚È‚ê‚Î‚¢‚¢‚æB

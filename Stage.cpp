@@ -61,6 +61,7 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
+	gameScore_ = 0;
 	player = new Player(START_POS, START_VEL, START_COLOR,
 		                START_DIR, START_RADIUS, START_OMEGA);
 
@@ -79,7 +80,7 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-
+	//敵VS弾の当たり判定
 	//敵の位置と、当たり判定の半径
 	//弾の位置
 	//isAlive_ -> falseにする手段
@@ -119,6 +120,8 @@ void Stage::Update()
 			{
 				//当たった
 				enemy->Dead();//敵を消す(生存フラグをfalseに）
+				int sc[3] = { 20, 50, 100 };//大中小のスコア
+				gameScore_ += sc[enemy->GetSize()];//スコア加算
 				//			//TODO:
 				//分裂の処理をここでやりたい
 				//大か中か小かを判定して
@@ -132,10 +135,12 @@ void Stage::Update()
 						Enemy* e = nullptr;
 						if (enemy->GetSize() == Enemy::Size::LARGE)
 						{
+							//大なら中を2~4つ
 							e = new Enemy(Enemy::Size::MEDIUM, 8);
 						}
 						else
 						{
+							//中なら小を2~4つ
 							e = new Enemy(Enemy::Size::SMALL, 8);
 						}
 						e->SetPos(enemy->GetPos());
@@ -146,6 +151,7 @@ void Stage::Update()
 				}
 				else
 				{
+					//小なら消してエフェクト生成
 					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
 					AddObject(effect);
 				}
@@ -155,86 +161,14 @@ void Stage::Update()
 	}
 
 
-
-
-	//for (auto& itr : objects)
-	//{
-	//	if (itr->GetType() == ENEMY)
-	//	{
-	//		Enemy* e = (Enemy *)(itr);
-	//		if (e->IsAlive())
-	//			aliveEnemies.push_back(e);
-	//	}
-	//	else if (itr->GetType() == BULLET)
-	//	{
-	//		Bullet* b = (Bullet *)(itr);
-	//		if (!b->IsDead())
-	//			aliveBullets.push_back(b);
-	//	}
-	//}
-	//for (auto& itr : bullets)
-	//{
-	//	for (int i = 0;i < enemies.size();i++)
-	//	{
-	//		if (!enemies[i]->IsAlive())
-	//			continue; //敵が死んでたらスルー
-	//		//itr->GetPos(); //弾の位置
-	//		//enemies[i]->GetPos(); //敵の位置
-	//		//enemies[i]->GetCollisionRadius(); //敵の当たり判定の半径
-	//		float dist = Math2D::Length(Math2D::Sub(itr->GetPos(), 
-	//			                        enemies[i]->GetPos()));
-	//		if (dist < enemies[i]->GetCollisionRadius())
-	//		{
-	//			//当たった
-	//			enemies[i]->Dead();//敵を消す(生存フラグをfalseに）
-	//			//TODO:
-	//			//分裂の処理をここでやりたい
-	//			//大か中か小かを判定して
-	//			//大なら中を2~4つ、中なら小を2~4つ、小なら何もしない(消すだけ）
-	//			Vector2D enemyPos = enemies[i]->GetPos();
-	//			Enemy::Size enemySize = enemies[i]->GetSize();
-	//			if (enemySize == Enemy::Size::SMALL)
-	//			{
-	//				ExplosionEffect* effect = new ExplosionEffect(enemyPos);
-	//				//effects.push_back(effect);
-	//				AddObject(effect);
-
-	//			}
-	//			else if (enemySize == Enemy::Size::MEDIUM)
-	//			{
-	//				for(int i=0;i<4;i++)
-	//				{
-	//					Enemy* e = new Enemy(Enemy::Size::SMALL, 8);
-	//					e->SetPos(enemyPos);
-	//					//速さの設定は必要
-	//					//x,yともに-100から100の間のランダムな速度
-	//					e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
-	//					//e->SetVel(Vector2D((float)(GetRand(200) - 100), (float)(GetRand(200) - 100)));
-	//					enemies.push_back(e);
-	//					AddObject(e);
-	//				}
-	//			}
-	//			else if (enemySize == Enemy::Size::LARGE)
-	//			{
-	//				for(int i=0;i<4;i++)
-	//				{
-	//					Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
-	//					e->SetPos(enemyPos);
-	//					//速さの設定は必要
-	//					e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
-	//					enemies.push_back(e);
-	//					AddObject(e);
-	//				}
-	//			}
-	//			itr->Dead();//弾も消す
-	//		}
-	//	}
-	//}
-
 	//賞味期限切れの弾を消す
 	DeleteBullet();
 	//死んでる敵を消す
 	DeleteEnemy();
+	//死んでるエフェクトを消す
+	DeleteEffect();
+
+	//全てのオブジェクトを更新
 	UpdateAllObjects();
 
 	//Zキーが押されたら弾丸を生成
@@ -247,6 +181,10 @@ void Stage::Update()
 void Stage::Draw()
 {
 	DrawAllObjects();
+	int fsize = GetFontSize();
+	SetFontSize(fsize * 2);
+	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%lld", gameScore_);
+	SetFontSize(fsize);
 }
 
 void Stage::Release()
@@ -280,7 +218,7 @@ void Stage::DeleteBullet()
 		}
 	}
 	//次に、箱の中身を確認して、nullptrがあったら箱から消す(箱自体を詰める）
-	for(auto it = objects.begin(); it != objects.end(); )
+	for (auto it = objects.begin(); it != objects.end(); )
 	{
 		if (*it == nullptr)
 		{
@@ -321,6 +259,37 @@ void Stage::DeleteEnemy()
 		}
 	}
 }
+
+void Stage::DeleteEffect()
+{
+	//死んでる敵を消す
+	for (auto& itr : objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::EFFECT)
+		{
+			ExplosionEffect* b = (ExplosionEffect*)(itr);
+			if (b->IsFinished() == true)
+			{
+				delete b;
+				itr = nullptr; //ポインタをnullptrにしておく
+			}
+		}
+	}
+	//次に、箱の中身を確認して、nullptrがあったら箱から消す(箱自体を詰める）
+	for (auto it = objects.begin(); it != objects.end(); )
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
+
 
 void Stage::ShootBullet()
 {
