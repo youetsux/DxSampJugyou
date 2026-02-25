@@ -1,4 +1,4 @@
-ï»¿#pragma once
+#pragma once
 #include "Base.h"
 #include <vector>
 
@@ -25,18 +25,19 @@ public:
 	Size GetSize() { return size_; }
 	Size checkSize() const;
 private:
-	void MakeShape(); //é ‚ç‚¹åº§æ¨™åˆæœŸåŒ–
-	float RandomRadius(Size size);//ã‚µã‚¤ã‚ºã«å¿œã˜ãŸãƒ©ãƒ³ãƒ€ãƒ ãªåŠå¾„å–å¾—
+	
+	void MakeShape(); //’¸“_À•W‰Šú‰»
+	float RandomRadius(Size size);//ƒTƒCƒY‚É‰‚¶‚½ƒ‰ƒ“ƒ_ƒ€‚È”¼Œaæ“¾
 
 private:
-	int segment_; //å††ã®åˆ†å‰²æ•°
-	float radius_; //åŠå¾„
-	float omega_; //å›è»¢é€Ÿåº¦(è§’é€Ÿåº¦)
-	float angle_; //ç¾åœ¨ã®å›è»¢è§’
+	int segment_; //‰~‚Ì•ªŠ„”
+	float radius_; //”¼Œa
+	float omega_; //‰ñ“]‘¬“x(Šp‘¬“x)
+	float angle_; //Œ»İ‚Ì‰ñ“]Šp
 
-	Size size_; //å¤§ä¸­å°ã®ã‚µã‚¤ã‚ºæƒ…å ±
+	Size size_; //‘å’†¬‚ÌƒTƒCƒYî•ñ
 
-	bool isAlive_; //ç”Ÿå­˜ãƒ•ãƒ©ã‚° true:ç”Ÿãã¦ã‚‹ false:æ­»ã‚“ã§ã‚‹
-	std::vector<Vector2D> vertex_; //å††ã®é ‚ç‚¹åº§æ¨™
+	bool isAlive_; //¶‘¶ƒtƒ‰ƒO true:¶‚«‚Ä‚é false:€‚ñ‚Å‚é
+	std::vector<Vector2D> vertex_; //‰~‚Ì’¸“_À•W
 };
 

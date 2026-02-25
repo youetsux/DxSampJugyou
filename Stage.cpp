@@ -80,87 +80,10 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	//敵VSプレイヤーの当たり判定
+	Enemy_vs_Player();
 	//敵VS弾の当たり判定
-	//敵の位置と、当たり判定の半径
-	//弾の位置
-	//isAlive_ -> falseにする手段
-	std::vector<Enemy*> aliveEnemies;
-	std::vector<Bullet*> aliveBullets;
-
-	aliveEnemies.clear();//念のため、毎フレームaliveEnemiesを空にする
-	aliveBullets.clear();//念のため、毎フレームaliveBulletsを空にする
-
-	//for(int i=0; i < objects.size(); i++)
-	for (auto& obj : objects)
-	{
-		if (obj->GetType() == OBJ_TYPE::ENEMY)
-		{
-			//baseクラスのポインタを敵クラスのポインタに変換してる
-			Enemy* e = (Enemy *)obj;
-			if (e->IsAlive()) {
-				aliveEnemies.push_back(e);
-			}
-		}
-		else if(obj->GetType() == OBJ_TYPE::BULLET)
-		{
-			//baseクラスのポインタを弾クラスのポインタに変換してる
-			Bullet* b = (Bullet *)obj;
-			if (!b->IsDead()) {
-				aliveBullets.push_back(b);
-			}
-		}
-	}
-	//for(int i=0;i<aliveBullets.size();i++)
-	for(auto& bullet: aliveBullets)
-	{
-		for (auto& enemy : aliveEnemies)
-		{
-			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
-			if (dist < enemy->GetCollisionRadius())
-			{
-				//当たった
-				enemy->Dead();//敵を消す(生存フラグをfalseに）
-				int sc[3] = { 20, 50, 100 };//大中小のスコア
-				gameScore_ += sc[enemy->GetSize()];//スコア加算
-				//			//TODO:
-				//分裂の処理をここでやりたい
-				//大か中か小かを判定して
-				//大なら中を2~4つ、中なら小を2~4つ、小なら消してエフェクト生成
-				if(enemy->GetSize() != Enemy::Size::SMALL)
-				{
-					int num = GetRand(3) + 2; //2~4のランダムな数
-					//大きさによって、分裂数変えると素敵です。
-					for(int i=0;i<num;i++)
-					{
-						Enemy* e = nullptr;
-						if (enemy->GetSize() == Enemy::Size::LARGE)
-						{
-							//大なら中を2~4つ
-							e = new Enemy(Enemy::Size::MEDIUM, 8);
-						}
-						else
-						{
-							//中なら小を2~4つ
-							e = new Enemy(Enemy::Size::SMALL, 8);
-						}
-						e->SetPos(enemy->GetPos());
-						//速さの設定は必要
-						e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
-						AddObject(e);
-					}
-				}
-				else
-				{
-					//小なら消してエフェクト生成
-					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
-					AddObject(effect);
-				}
-				bullet->Dead();//弾も消す
-			}
-		}
-	}
-
-
+	Enemy_vs_Bullet();
 	//賞味期限切れの弾を消す
 	DeleteBullet();
 	//死んでる敵を消す
@@ -196,6 +119,131 @@ void Stage::Release()
 	//	if (enemies[i] != nullptr)
 	//		delete enemies[i];
 	//}
+}
+
+void Stage::Enemy_vs_Bullet()
+{
+	//敵VS弾の当たり判定
+//敵の位置と、当たり判定の半径
+//弾の位置
+//isAlive_ -> falseにする手段
+	std::vector<Enemy*> aliveEnemies;
+	std::vector<Bullet*> aliveBullets;
+
+	aliveEnemies.clear();//念のため、毎フレームaliveEnemiesを空にする
+	aliveBullets.clear();//念のため、毎フレームaliveBulletsを空にする
+
+	//for(int i=0; i < objects.size(); i++)
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::ENEMY)
+		{
+			//baseクラスのポインタを敵クラスのポインタに変換してる
+			Enemy* e = (Enemy*)obj;
+			if (e->IsAlive()) {
+				aliveEnemies.push_back(e);
+			}
+		}
+		else if (obj->GetType() == OBJ_TYPE::BULLET)
+		{
+			//baseクラスのポインタを弾クラスのポインタに変換してる
+			Bullet* b = (Bullet*)obj;
+			if (!b->IsDead()) {
+				aliveBullets.push_back(b);
+			}
+		}
+	}
+	//for(int i=0;i<aliveBullets.size();i++)
+	for (auto& bullet : aliveBullets)
+	{
+		for (auto& enemy : aliveEnemies)
+		{
+			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
+			if (dist < enemy->GetCollisionRadius())
+			{
+				//当たった
+				enemy->Dead();//敵を消す(生存フラグをfalseに）
+				int sc[3] = { 20, 50, 100 };//大中小のスコア
+				gameScore_ += sc[enemy->GetSize()];//スコア加算
+				//			//TODO:
+				//分裂の処理をここでやりたい
+				//大か中か小かを判定して
+				//大なら中を2~4つ、中なら小を2~4つ、小なら消してエフェクト生成
+				if (enemy->GetSize() != Enemy::Size::SMALL)
+				{
+					int num = GetRand(3) + 2; //2~4のランダムな数
+					//大きさによって、分裂数変えると素敵です。
+					for (int i = 0; i < num; i++)
+					{
+						Enemy* e = nullptr;
+						if (enemy->GetSize() == Enemy::Size::LARGE)
+						{
+							//大なら中を2~4つ
+							e = new Enemy(Enemy::Size::MEDIUM, 8);
+						}
+						else
+						{
+							//中なら小を2~4つ
+							e = new Enemy(Enemy::Size::SMALL, 8);
+						}
+						e->SetPos(enemy->GetPos());
+						//速さの設定は必要
+						e->SetVel({ (float)(GetRand(200) - 100), (float)(GetRand(200) - 100) });
+						AddObject(e);
+					}
+				}
+				else
+				{
+					//小なら消してエフェクト生成
+					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
+					AddObject(effect);
+				}
+				bullet->Dead();//弾も消す
+			}
+		}
+	}
+
+}
+
+void Stage::Enemy_vs_Player()
+{
+	if (player == nullptr || !player->IsAlive())
+		return; // プレイヤーが死んでたらスルー
+
+	std::vector<Enemy*> aliveEnemies;
+	aliveEnemies.clear();
+
+	// 生きている敵を収集
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::ENEMY)
+		{
+			Enemy* e = (Enemy*)obj;
+			if (e->IsAlive()) {
+				aliveEnemies.push_back(e);
+			}
+		}
+	}
+
+	// プレイヤーと敵の当たり判定
+	for (auto& enemy : aliveEnemies)
+	{
+		float dist = Math2D::Length(Math2D::Sub(player->GetPos(), enemy->GetPos()));
+		float collisionDist = player->GetRadius() + enemy->GetCollisionRadius();
+
+		if (dist < collisionDist)
+		{
+			// 当たった
+			player->Dead(); // プレイヤーを死亡状態に
+
+			// 赤いエフェクトを生成
+			ExplosionEffect* effect = new ExplosionEffect(player->GetPos(), 100);
+			effect->SetCharaColor(GetColor(255, 0, 0)); // 赤色に設定
+			AddObject(effect);
+
+			break; // プレイヤーは一度死んだら終わり
+		}
+	}
 }
 
 void Stage::DeleteBullet()

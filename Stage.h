@@ -17,6 +17,8 @@ public:
 	void Draw();
 	void Release();
 private:
+	void Enemy_vs_Bullet();
+	void Enemy_vs_Player();
 	//Player* player_;
 	//Enemy* enemy_;
 	long long gameScore_;

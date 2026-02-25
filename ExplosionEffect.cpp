@@ -105,13 +105,15 @@ void ExplosionEffect::Draw()
 	{
 		if (particle.life > 0.0f)
 		{
+			int r, g, b;
+			GetColor2(GetCharaColor(), &r, &g, &b);
 			//パーティクルの描画
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
 			int particleColor = GetColor(
-				(int)(255 * particle.alpha),
-				(int)(255 * particle.alpha),
-				(int)(255 * particle.alpha)
+				(int)(r * particle.alpha),
+				(int)(g * particle.alpha),
+				(int)(b * particle.alpha)
 			);
 			DrawCircle((int)screenPos.x,
 						(int)screenPos.y,
