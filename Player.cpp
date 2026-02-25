@@ -21,6 +21,8 @@ Player::Player()
 	:Base(Vector2D(0,0), Vector2D(0, 0), GetColor(0,0,0)),
 	dir_({ 0,-1 }), radius_(1.0f), omega_{ 1.0f }, angle_(0.0f), isAlive_(true)
 {
+	collisionRadius_ = radius_; //当たり判定の半径は見た目の半径と同じにしておく
+
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,1 };
 	vertex_[2] = { 0,2 };
@@ -31,6 +33,7 @@ Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	           const Vector2D& dir, float r, float omega)
 	:Base(pos, vel, color), dir_(dir), radius_(r), omega_(omega), isAlive_(true)
 {
+	collisionRadius_ = radius_; //当たり判定の半径は見た目の半径と同じにしておく
 	vertex_[0] = { 0, 0 }; //０で初期化
 	vertex_[1] = { 0, 0 }; //０で初期化
 	vertex_[2] = { 0, 0 }; //０で初期化
@@ -141,6 +144,9 @@ void Player::Draw()
 		scrPos[2].x, scrPos[2].y,
 		GetColor(255, 0, 0), TRUE
 	);
-
-	DrawFormatString(50, 50, GetColor(255, 255, 255), "RotAngle:%lf", angle_);
+	//デバッグ用
+	Vector2D cp = Math2D::World2Screen(pos_);
+	DrawCircle((int)cp.x, (int)cp.y, (int)collisionRadius_,
+		GetColor(255, 255, 0), FALSE);
+	//DrawFormatString(50, 50, GetColor(255, 255, 255), "RotAngle:%lf", angle_);
 }

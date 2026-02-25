@@ -20,9 +20,11 @@ namespace
 	const float START_RADIUS = 30.0f;
 	const float START_OMEGA = 2.0f;
 	const unsigned int START_COLOR = GetColor(255, 0, 0);
+	const float PLAYER_COLLISION_RADIUS = 15.0f; //プレイヤーの当たり判定の半径
+
 	const unsigned int ENEMY_MAX = 100; //敵の最大数
 	const unsigned int ENEMY_NUM = 10; //最初に出現する敵の数
-	Player* player = nullptr;
+	//Player* player = nullptr;
 	//std::vector<Bullet*> bullets; //弾丸の保管庫
 	//std::vector<Enemy*> enemies; //敵の保管庫
 	//std::vector<ExplosionEffect*> effects; //エフェクトの保管庫
@@ -48,6 +50,8 @@ namespace
 			obj->Draw();
 		}
 	}
+
+	int stageState = 0; //0:タイトル 1:プレイ中 2:ゲームーバー
 }
 
 
@@ -61,14 +65,19 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
+	objects.clear(); //オブジェクトの保管庫を空にする
+
+	stageState = 1; //タイトル画面にする
+	
 	gameScore_ = 0;
-	player = new Player(START_POS, START_VEL, START_COLOR,
+	//変数playerは、ローカル変数なので、この関数が終わると消えてしまう。
+	//だから、newして動的に確保してる。
+	Player* player = new Player(START_POS, START_VEL, START_COLOR,
 		                START_DIR, START_RADIUS, START_OMEGA);
-
+	//playerの当たり判定の半径を設定
+	player->SetCollisionRadius(PLAYER_COLLISION_RADIUS);
+	//オブジェクトの保管庫にplayerを追加
 	AddObject(player);
-
-	//enemies.clear();
-	//enemies.reserve(ENEMY_NUM);
 
 	//最初の敵を生成
 	for (int i = 0; i < ENEMY_NUM; i++)
@@ -79,6 +88,46 @@ void Stage::Initialize()
 }
 
 void Stage::Update()
+{
+	if (stageState == 0)
+	{
+		//タイトル画面のアップデート処理
+		//ゲームスタート用のキーが押されたら
+		// stageStateを1にする
+	}else if(stageState == 1)
+	{
+		//プレイ中のアップデート処理
+
+		//プレイヤーVS敵の当たり判定
+		Player_vs_Enemy();
+		//敵VS弾の当たり判定
+		Enemy_vs_Bullet();
+
+		//賞味期限切れの弾を消す
+		DeleteBullet();
+		//死んでる敵を消す
+		DeleteEnemy();
+		//死んでるエフェクトを消す
+		DeleteEffect();
+
+		//全てのオブジェクトを更新
+		UpdateAllObjects();
+
+		//Zキーが押されたら弾丸を生成
+		if (Input::IsKeyDown(KEY_INPUT_Z))
+		{
+			ShootBullet();
+		}
+
+	}
+	else if (stageState == 2)
+	{
+		//ゲームオーバーのアップデート処理
+	}
+
+}
+
+void Stage::Enemy_vs_Bullet()
 {
 	//敵VS弾の当たり判定
 	//敵の位置と、当たり判定の半径
@@ -96,22 +145,22 @@ void Stage::Update()
 		if (obj->GetType() == OBJ_TYPE::ENEMY)
 		{
 			//baseクラスのポインタを敵クラスのポインタに変換してる
-			Enemy* e = (Enemy *)obj;
+			Enemy* e = (Enemy*)obj;
 			if (e->IsAlive()) {
 				aliveEnemies.push_back(e);
 			}
 		}
-		else if(obj->GetType() == OBJ_TYPE::BULLET)
+		else if (obj->GetType() == OBJ_TYPE::BULLET)
 		{
 			//baseクラスのポインタを弾クラスのポインタに変換してる
-			Bullet* b = (Bullet *)obj;
+			Bullet* b = (Bullet*)obj;
 			if (!b->IsDead()) {
 				aliveBullets.push_back(b);
 			}
 		}
 	}
 	//for(int i=0;i<aliveBullets.size();i++)
-	for(auto& bullet: aliveBullets)
+	for (auto& bullet : aliveBullets)
 	{
 		for (auto& enemy : aliveEnemies)
 		{
@@ -126,11 +175,11 @@ void Stage::Update()
 				//分裂の処理をここでやりたい
 				//大か中か小かを判定して
 				//大なら中を2~4つ、中なら小を2~4つ、小なら消してエフェクト生成
-				if(enemy->GetSize() != Enemy::Size::SMALL)
+				if (enemy->GetSize() != Enemy::Size::SMALL)
 				{
 					int num = GetRand(3) + 2; //2~4のランダムな数
 					//大きさによって、分裂数変えると素敵です。
-					for(int i=0;i<num;i++)
+					for (int i = 0; i < num; i++)
 					{
 						Enemy* e = nullptr;
 						if (enemy->GetSize() == Enemy::Size::LARGE)
@@ -153,38 +202,83 @@ void Stage::Update()
 				{
 					//小なら消してエフェクト生成
 					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
+					effect->SetCharaColor(GetColor(GetRand(255), GetRand(255), GetRand(255)));
 					AddObject(effect);
 				}
 				bullet->Dead();//弾も消す
 			}
 		}
 	}
+}
 
+void Stage::Player_vs_Enemy()
+{
+	std::vector<Enemy*> aliveEnemies;//生きてる敵のリスト
+	aliveEnemies.clear();//念のため、毎フレームaliveEnemiesを空にする
+	Player* player = nullptr;
 
-	//賞味期限切れの弾を消す
-	DeleteBullet();
-	//死んでる敵を消す
-	DeleteEnemy();
-	//死んでるエフェクトを消す
-	DeleteEffect();
-
-	//全てのオブジェクトを更新
-	UpdateAllObjects();
-
-	//Zキーが押されたら弾丸を生成
-	if (Input::IsKeyDown(KEY_INPUT_Z))
+	for (auto& obj : objects)
 	{
-		ShootBullet();
+		if(obj->GetType() == OBJ_TYPE::PLAYER)
+		{
+			player = (Player*)obj;
+		}
+		else if (obj->GetType() == OBJ_TYPE::ENEMY)
+		{
+			//baseクラスのポインタを敵クラスのポインタに変換してる
+			Enemy* e = (Enemy*)obj;
+			if (e->IsAlive()) {
+				aliveEnemies.push_back(e);
+			}
+		}
 	}
+
+	if (player == nullptr || player->IsAlive() == false)
+		return; //プレイヤーがいないか、死んでたらスルー
+
+	for(auto& enemy : aliveEnemies)
+	{
+		//①敵とプレイヤーの距離を計算
+		float dist = Math2D::Length(Math2D::Sub(player->GetPos(), enemy->GetPos()));
+		//②敵とプレイヤーの当たり判定の半径を足したものより、
+		float collisionDist = player->GetCollisionRadius() + enemy->GetCollisionRadius();
+		//距離が近かったら当たったとする
+		if (dist < collisionDist)
+		{
+			//プレイヤーを死なせる
+			player->Dead();
+			//赤いエフェクトを生成
+			ExplosionEffect* effect = new ExplosionEffect(player->GetPos(), 50);
+			effect->SetCharaColor(GetColor(255, 0, 0));
+			AddObject(effect);
+
+			break;
+		}
+	}
+
 }
 
 void Stage::Draw()
 {
-	DrawAllObjects();
-	int fsize = GetFontSize();
-	SetFontSize(fsize * 2);
-	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%lld", gameScore_);
-	SetFontSize(fsize);
+	if (stageState == 0)
+	{
+		//タイトル画面の描画処理
+	
+	}
+	else if (stageState == 1)
+	{
+		DrawAllObjects();
+		int fsize = GetFontSize();
+		SetFontSize(fsize * 2);
+		DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
+		SetFontSize(fsize);
+	}
+	else if(stageState == 2)
+	{
+		//ゲームオーバーの描画処理
+	}
+
+
 }
 
 void Stage::Release()
@@ -197,6 +291,8 @@ void Stage::Release()
 	//		delete enemies[i];
 	//}
 }
+
+
 
 void Stage::DeleteBullet()
 {
@@ -293,6 +389,15 @@ void Stage::DeleteEffect()
 
 void Stage::ShootBullet()
 {
+	Player* player = nullptr;
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::PLAYER)
+		{
+			player = (Player*)obj;
+			break;
+		}
+	}
 	Vector2D pos = player->GetPos();
 	Vector2D v = Math2D::Mul(player->GetDirVec(), 300.0f);
 	unsigned int bcol = GetColor(255, 255, 255);
