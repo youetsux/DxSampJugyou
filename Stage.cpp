@@ -67,7 +67,7 @@ void Stage::Initialize()
 {
 	objects.clear(); //オブジェクトの保管庫を空にする
 
-	stageState = 1; //タイトル画面にする
+	stageState = 2; //タイトル画面にする
 	
 	gameScore_ = 0;
 	//変数playerは、ローカル変数なので、この関数が終わると消えてしまう。
@@ -87,6 +87,78 @@ void Stage::Initialize()
 	}
 }
 
+void Stage::TitleUpdate()
+{
+}
+
+void Stage::PlayUpdate()
+{
+	//プレイ中のアップデート処理
+	//プレイヤーVS敵の当たり判定
+	Player_vs_Enemy();
+	//敵VS弾の当たり判定
+	Enemy_vs_Bullet();
+
+	//賞味期限切れの弾を消す
+	DeleteBullet();
+	//死んでる敵を消す
+	DeleteEnemy();
+	//死んでるエフェクトを消す
+	DeleteEffect();
+
+	//全てのオブジェクトを更新
+	UpdateAllObjects();
+
+	//Zキーが押されたら弾丸を生成
+	if (Input::IsKeyDown(KEY_INPUT_Z))
+	{
+		ShootBullet();
+	}
+
+}
+
+void Stage::GameOverUpdate()
+{
+}
+
+void Stage::TitleDraw()
+{
+	int fsize = GetFontSize();
+	SetFontSize(80);
+	SetFontThickness(10);
+	DrawString(WIN_WIDTH / 2 - 176, WIN_HEIGHT / 2 - 84, "ASTEROIDS", GetColor(255, 0, 0));
+	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2 - 80, "ASTEROIDS", GetColor(255, 255, 255) );
+	SetFontSize(fsize);
+}
+
+void Stage::PlayDraw()
+{
+	DrawAllObjects();
+	int fsize = GetFontSize();
+	SetFontSize(fsize * 2);
+	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
+	SetFontSize(fsize);
+}
+
+void Stage::GameOverDraw()
+{
+	static int gTimer = 0;
+	gTimer++;
+	static bool colorFlag = false;
+	if (gTimer >= 5)
+	{
+		colorFlag = !colorFlag;
+		gTimer = 0;
+	}
+	unsigned int color = colorFlag ? GetColor(255, 0, 0) : GetColor(255, 255, 255);
+	int fsize = GetFontSize();
+	SetFontSize(80);
+	SetFontThickness(10);
+	DrawString(WIN_WIDTH / 2 - 176, WIN_HEIGHT / 2 - 84, "GAME OVER", GetColor(255,0,0));
+	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2 - 80, "GAME OVER", color);
+	SetFontSize(fsize);
+}
+
 void Stage::Update()
 {
 	if (stageState == 0)
@@ -94,35 +166,15 @@ void Stage::Update()
 		//タイトル画面のアップデート処理
 		//ゲームスタート用のキーが押されたら
 		// stageStateを1にする
+		TitleUpdate();
 	}else if(stageState == 1)
 	{
-		//プレイ中のアップデート処理
-
-		//プレイヤーVS敵の当たり判定
-		Player_vs_Enemy();
-		//敵VS弾の当たり判定
-		Enemy_vs_Bullet();
-
-		//賞味期限切れの弾を消す
-		DeleteBullet();
-		//死んでる敵を消す
-		DeleteEnemy();
-		//死んでるエフェクトを消す
-		DeleteEffect();
-
-		//全てのオブジェクトを更新
-		UpdateAllObjects();
-
-		//Zキーが押されたら弾丸を生成
-		if (Input::IsKeyDown(KEY_INPUT_Z))
-		{
-			ShootBullet();
-		}
-
+		PlayUpdate();
 	}
 	else if (stageState == 2)
 	{
 		//ゲームオーバーのアップデート処理
+		GameOverUpdate();
 	}
 
 }
@@ -275,19 +327,17 @@ void Stage::Draw()
 	if (stageState == 0)
 	{
 		//タイトル画面の描画処理
-	
+		TitleDraw();
 	}
 	else if (stageState == 1)
 	{
-		DrawAllObjects();
-		int fsize = GetFontSize();
-		SetFontSize(fsize * 2);
-		DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
-		SetFontSize(fsize);
+		//プレイ中の描画処理
+		PlayDraw();
 	}
 	else if(stageState == 2)
 	{
 		//ゲームオーバーの描画処理
+		GameOverDraw();
 	}
 }
 
