@@ -19,23 +19,23 @@ public:
 	Base();
 	Base(const Vector2D& pos, const Vector2D& vel, unsigned int color);
 	~Base();
-	virtual void Update(); //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
-	virtual void Draw(); //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãã†
+	virtual void Update(); //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
+	virtual void Draw(); //ƒI[ƒo[ƒ‰ƒCƒh‚µ‚»‚¤
 public:
-	//ã‚»ãƒƒã‚¿ãƒ¼ã€ã‚²ãƒƒã‚¿ãƒ¼ã€€ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³å®šç¾©
+	//ƒZƒbƒ^[AƒQƒbƒ^[@ƒCƒ“ƒ‰ƒCƒ“’è‹`
 	void SetPos(const Vector2D& pos) { pos_ = pos; }
 	Vector2D GetPos() const { return pos_; }
 	void SetVel(const Vector2D& vel) { vel_ = vel; }
 	Vector2D GetVel() const { return vel_; }
 	void SetCharaColor(const unsigned int color) { Color_ = color; }
 	unsigned int GetCharaColor() const { return Color_; }
-	//setterã¨getterã‚’è¿½åŠ 
+	//setter‚Ægetter‚ğ’Ç‰Á
 	void SetObjType(const OBJ_TYPE& objtype) { objType = objtype; }
 	OBJ_TYPE GetType() const { return objType; }
 protected:
-	Vector2D pos_;//ä½ç½®
-	Vector2D vel_;//é€Ÿåº¦
-	unsigned int Color_;//è‰² ç¬¦å·ãªã—æ•´æ•°
-	OBJ_TYPE objType;//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¨®é¡
+	Vector2D pos_;//ˆÊ’u
+	Vector2D vel_;//‘¬“x
+	unsigned int Color_;//F •„†‚È‚µ®”
+	OBJ_TYPE objType;//ƒIƒuƒWƒFƒNƒg‚Ìí—Ş
 };
 

@@ -9,19 +9,19 @@
 namespace {
 
 
-	const float DAMP = 0.995f; //æ¸›è¡°ç‡
-	const float ACC = 200.0f; //åŠ é€Ÿåº¦
+	const float DAMP = 0.995f; //Œ¸Š—¦
+	const float ACC = 200.0f; //‰Á‘¬“x
 }
 
 
-//å¼•æ•°ãªã—ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-//é©å½“ãªå€¤ã‚’å…¥ã‚Œã‚‹ã ã‘ã€ã—ã¦åˆæœŸåŒ–ã—ã¦ãªã„ãƒ¡ãƒ³ãƒå¤‰æ•°ã‚’ãªãã™
-//=å€¤ã«æ„å‘³ã¯ãªã„ã€‚
+//ˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//“K“–‚È’l‚ğ“ü‚ê‚é‚¾‚¯A‚µ‚Ä‰Šú‰»‚µ‚Ä‚È‚¢ƒƒ“ƒo•Ï”‚ğ‚È‚­‚·
+//=’l‚ÉˆÓ–¡‚Í‚È‚¢B
 Player::Player()
 	:Base(Vector2D(0,0), Vector2D(0, 0), GetColor(0,0,0)),
 	dir_({ 0,-1 }), radius_(1.0f), omega_{ 1.0f }, angle_(0.0f), isAlive_(true)
 {
-	collisionRadius_ = radius_; //å½“ãŸã‚Šåˆ¤å®šã®åŠå¾„ã¯è¦‹ãŸç›®ã®åŠå¾„ã¨åŒã˜ã«ã—ã¦ãŠã
+	collisionRadius_ = radius_; //“–‚½‚è”»’è‚Ì”¼Œa‚ÍŒ©‚½–Ú‚Ì”¼Œa‚Æ“¯‚¶‚É‚µ‚Ä‚¨‚­
 
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,1 };
@@ -33,11 +33,11 @@ Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	           const Vector2D& dir, float r, float omega)
 	:Base(pos, vel, color), dir_(dir), radius_(r), omega_(omega), isAlive_(true)
 {
-	collisionRadius_ = radius_; //å½“ãŸã‚Šåˆ¤å®šã®åŠå¾„ã¯è¦‹ãŸç›®ã®åŠå¾„ã¨åŒã˜ã«ã—ã¦ãŠã
-	vertex_[0] = { 0, 0 }; //ï¼ã§åˆæœŸåŒ–
-	vertex_[1] = { 0, 0 }; //ï¼ã§åˆæœŸåŒ–
-	vertex_[2] = { 0, 0 }; //ï¼ã§åˆæœŸåŒ–
-	angle_ = 0.0f; //ï¼ã§åˆæœŸåŒ–
+	collisionRadius_ = radius_; //“–‚½‚è”»’è‚Ì”¼Œa‚ÍŒ©‚½–Ú‚Ì”¼Œa‚Æ“¯‚¶‚É‚µ‚Ä‚¨‚­
+	vertex_[0] = { 0, 0 }; //‚O‚Å‰Šú‰»
+	vertex_[1] = { 0, 0 }; //‚O‚Å‰Šú‰»
+	vertex_[2] = { 0, 0 }; //‚O‚Å‰Šú‰»
+	angle_ = 0.0f; //‚O‚Å‰Šú‰»
 	SetObjType(PLAYER);
 }
 
@@ -48,24 +48,24 @@ Player::~Player()
 void Player::Update()
 {
 	if(IsAlive() == false)
-		return; //æ­»ã‚“ã§ãŸã‚‰ã‚¹ãƒ«ãƒ¼
+		return; //€‚ñ‚Å‚½‚çƒXƒ‹[
 
 	const float PI = 3.1415926359f;
-	//åŸç‚¹ã«ã‚ã‚‹åŠå¾„1ã®å†…æ¥ã™ã‚‹ï¼“è§’å½¢ã‚’è€ƒãˆã‚‹
+	//Œ´“_‚É‚ ‚é”¼Œa1‚Ì“àÚ‚·‚é‚RŠpŒ`‚ğl‚¦‚é
 	Vector2D p[3];
 	p[0] = { 0.0f, 1.0f };
 	p[1] = { cos(-60.0f * (PI / 180.0f)), sin(-60.0f * (PI / 180.0f)) };
 	p[2] = { cos(240.0f * (PI / 180.0f)), sin(240.0f * (PI / 180.0f)) };
-	//åŠå¾„ã‚’ï¼‘â†’radius_ã«æ‹¡å¤§
+	//”¼Œa‚ğ‚P¨radius_‚ÉŠg‘å
 	p[0].x = radius_ * p[0].x; p[0].y = radius_ * p[0].y;
 	p[1].x = radius_ * p[1].x; p[1].y = radius_ * p[1].y;
 	p[2].x = radius_ * p[2].x; p[2].y = radius_ * p[2].y;
 	
-	//3è§’å½¢ã®3é ‚ç‚¹ã‚’dir_ã¨radius_ã¨pos_ã‹ã‚‰æ±‚ã‚ã‚ˆã†
+	//3ŠpŒ`‚Ì3’¸“_‚ğdir_‚Æradius_‚Æpos_‚©‚ç‹‚ß‚æ‚¤
 	vertex_[0] = { pos_.x + p[0].x, pos_.y + p[0].y };
 	vertex_[1] = { pos_.x + p[1].x, pos_.y + p[1].y };
 	vertex_[2] = { pos_.x + p[2].x, pos_.y + p[2].y };
-	//åˆæœŸåº§æ¨™ãŒã“ã“ã¾ã§ã§æ±ºå®š
+	//‰ŠúÀ•W‚ª‚±‚±‚Ü‚Å‚ÅŒˆ’è
 
 	if (Input::IsKeepKeyDown(KEY_INPUT_LEFT))
 	{
@@ -76,24 +76,24 @@ void Player::Update()
 		angle_ = angle_ - omega_ * GetDeltaTime();
 	}
 
-	//åŸç‚¹ã«ä¸‰è§’å½¢ã‚’æˆ»ã™
+	//Œ´“_‚ÉOŠpŒ`‚ğ–ß‚·
 	Mat2 toOrigin = Math2D::Translation({ -pos_.x, -pos_.y });
 	//for (int i = 0;i < 3;i++)
 	//{
 	//	vertex_[i] = Math2D::TransformPoint(vertex_[i], toOrigin);
 	//}
-	Mat2 rotMat = Math2D::Rotation(angle_);//å˜ä½ã¯ãƒ©ã‚¸ã‚¢ãƒ³ã ã‚ˆ
+	Mat2 rotMat = Math2D::Rotation(angle_);//’PˆÊ‚Íƒ‰ƒWƒAƒ“‚¾‚æ
 	//for (int i = 0;i < 3;i++)
 	//{
 	//	vertex_[i] = Math2D::TransformPoint(vertex_[i], rotMat);
 	//}
-	////å…ƒã®ä½ç½®ã«æˆ»ã™
+	////Œ³‚ÌˆÊ’u‚É–ß‚·
 	Mat2 toPos = Math2D::Translation({ pos_.x, pos_.y });
 	//for (int i = 0;i < 3;i++)
 	//{
 	//	vertex_[i] = Math2D::TransformPoint(vertex_[i], toPos);
 	//}
-	//ã“ã“ã¾ã§ã§å›è»¢å‡¦ç†å®Œäº†
+	//‚±‚±‚Ü‚Å‚Å‰ñ“]ˆ—Š®—¹
 	//[toPos*rotMat*toOrigin]*vertex_;
 	Mat2 tmp = Math2D::Multiply(rotMat, toOrigin);
 	//[toPos*tmp]*vertex_;
@@ -112,15 +112,15 @@ void Player::Update()
 	}
 
 
-	//ç§»å‹•å‡¦ç†
+	//ˆÚ“®ˆ—
 	pos_.x = pos_.x + vel_.x * GetDeltaTime();
 	pos_.y = pos_.y + vel_.y * GetDeltaTime();
 
 	//pos_ = Math2D::Add(pos_, Math2D::Mul(vel_, GetDeltaTime()));
 
-	vel_ = Math2D::Mul(vel_, DAMP); //æ¸›è¡°å‡¦ç†
+	vel_ = Math2D::Mul(vel_, DAMP); //Œ¸Šˆ—
 
-	//ç”»é¢ã¯ã˜ã‚ãƒ¼ã·
+	//‰æ–Ê‚Í‚¶‚í[‚Õ
 	if (pos_.x < 0) pos_.x = WIN_WIDTH;
 	if (pos_.x > WIN_WIDTH) pos_.x = 0;
 	if (pos_.y < 0) pos_.y = WIN_HEIGHT;
@@ -131,7 +131,7 @@ void Player::Update()
 void Player::Draw()
 {
 	if(IsAlive() == false)
-		return; //æ­»ã‚“ã§ãŸã‚‰ã‚¹ãƒ«ãƒ¼
+		return; //€‚ñ‚Å‚½‚çƒXƒ‹[
 
 	Vector2D scrPos[3];
 	scrPos[0] = Math2D::World2Screen(vertex_[0]);
@@ -144,7 +144,7 @@ void Player::Draw()
 		scrPos[2].x, scrPos[2].y,
 		GetColor(255, 0, 0), TRUE
 	);
-	//ãƒ‡ãƒãƒƒã‚°ç”¨
+	//ƒfƒoƒbƒO—p
 	Vector2D cp = Math2D::World2Screen(pos_);
 	DrawCircle((int)cp.x, (int)cp.y, (int)collisionRadius_,
 		GetColor(255, 255, 0), FALSE);

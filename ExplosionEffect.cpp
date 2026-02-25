@@ -109,6 +109,8 @@ void ExplosionEffect::Draw()
 	{
 		if (particle.life > 0.0f)
 		{
+			int r, g, b;
+			GetColor2(GetCharaColor(), &r, &g, &b);
 			//パーティクルの描画
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
