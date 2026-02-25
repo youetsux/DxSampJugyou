@@ -23,7 +23,7 @@ namespace
 	const float PLAYER_COLLISION_RADIUS = 15.0f; //プレイヤーの当たり判定の半径
 
 	const unsigned int ENEMY_MAX = 100; //敵の最大数
-	const unsigned int ENEMY_NUM = 10; //最初に出現する敵の数
+	const unsigned int ENEMY_NUM = 5; //最初に出現する敵の数
 	//Player* player = nullptr;
 	//std::vector<Bullet*> bullets; //弾丸の保管庫
 	//std::vector<Enemy*> enemies; //敵の保管庫
@@ -67,9 +67,11 @@ void Stage::Initialize()
 {
 	objects.clear(); //オブジェクトの保管庫を空にする
 
-	stageState = 2; //タイトル画面にする
+	stageState = 0; //タイトル画面にする
 	
 	gameScore_ = 0;
+
+	isGameOver_ = false;
 	//変数playerは、ローカル変数なので、この関数が終わると消えてしまう。
 	//だから、newして動的に確保してる。
 	Player* player = new Player(START_POS, START_VEL, START_COLOR,
@@ -82,18 +84,45 @@ void Stage::Initialize()
 	//最初の敵を生成
 	for (int i = 0; i < ENEMY_NUM; i++)
 	{
+		int cNum = GetRand(3); //0~3の乱数
+		Vector2D corner[4]={
+			{0,0},
+			{WIN_WIDTH,0},
+			{0,WIN_HEIGHT},
+			{WIN_WIDTH,WIN_HEIGHT}
+		};
 		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
+		e->SetPos(corner[cNum]);
 		AddObject(e);
 	}
 }
 
 void Stage::TitleUpdate()
 {
+	//タイトル画面のアップデート処理
+	if (Input::IsKeyDown(KEY_INPUT_RETURN)) //Enterキーが押されたら
+	{
+		stageState = 1; //プレイ中に移行
+	}
 }
 
 void Stage::PlayUpdate()
 {
+	if(checkGameOver())
+	{
+		//全てのオブジェクトを更新
+		UpdateAllObjects();
+		static float transTimer = 0;
+		transTimer += GetDeltaTime();
+		if (transTimer >= 2.0f) //2秒待ってからゲームオーバーに移行
+		{
+			stageState = 2; //ゲームオーバーに移行
+			transTimer = 0; //タイマーをリセット
+		}
+		return;
+	}
 	//プレイ中のアップデート処理
+
 	//プレイヤーVS敵の当たり判定
 	Player_vs_Enemy();
 	//敵VS弾の当たり判定
@@ -106,8 +135,9 @@ void Stage::PlayUpdate()
 	//死んでるエフェクトを消す
 	DeleteEffect();
 
-	//全てのオブジェクトを更新
 	UpdateAllObjects();
+
+
 
 	//Zキーが押されたら弾丸を生成
 	if (Input::IsKeyDown(KEY_INPUT_Z))
@@ -119,6 +149,12 @@ void Stage::PlayUpdate()
 
 void Stage::GameOverUpdate()
 {
+	//タイトル画面のアップデート処理
+	if (Input::IsKeyDown(KEY_INPUT_RETURN)) //Enterキーが押されたら
+	{
+		stageState = 0; //タイトル画面に移行
+		Initialize(); //初期化してタイトル画面に戻る
+	}
 }
 
 void Stage::TitleDraw()
@@ -311,6 +347,7 @@ void Stage::Player_vs_Enemy()
 		{
 			//プレイヤーを死なせる
 			player->Dead();
+			
 			//赤いエフェクトを生成
 			ExplosionEffect* effect = new ExplosionEffect(player->GetPos(), 50);
 			effect->SetCharaColor(GetColor(255, 0, 0));
@@ -455,4 +492,28 @@ void Stage::ShootBullet()
 
 	Bullet* b = new Bullet(pos, v, bcol, r, life);
 	AddObject(b);
+}
+
+
+bool Stage::checkGameOver()
+{
+	Player* player = nullptr;
+	int aliveEnemyCount = 0;
+
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::PLAYER)
+		{
+			player = (Player*)obj;
+		}
+		else if (obj->GetType() == OBJ_TYPE::ENEMY)
+		{
+			Enemy* e = (Enemy*)obj;
+			if (e->IsAlive())
+			{
+				aliveEnemyCount++;
+			}
+		}
+	}
+	return (!player->IsAlive() || aliveEnemyCount == 0);
 }
