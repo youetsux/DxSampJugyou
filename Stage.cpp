@@ -127,35 +127,6 @@ void Stage::Update()
 
 }
 
-void Stage::Enemy_vs_Bullet()
-{
-	//敵VS弾の当たり判定
-	Enemy_vs_Bullet();
-	//賞味期限切れの弾を消す
-	DeleteBullet();
-	//死んでる敵を消す
-	DeleteEnemy();
-	//死んでるエフェクトを消す
-	DeleteEffect();
-
-	//全てのオブジェクトを更新
-	UpdateAllObjects();
-
-	//Zキーが押されたら弾丸を生成
-	if (Input::IsKeyDown(KEY_INPUT_Z))
-	{
-		ShootBullet();
-	}
-}
-
-void Stage::Draw()
-{
-	DrawAllObjects();
-	int fsize = GetFontSize();
-	SetFontSize(fsize * 2);
-	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%lld", gameScore_);
-	SetFontSize(fsize);
-}
 
 void Stage::Release()
 {
@@ -317,23 +288,6 @@ void Stage::Draw()
 	else if(stageState == 2)
 	{
 		//ゲームオーバーの描画処理
-	}
-
-
-}
-
-		if (dist < collisionDist)
-		{
-			// 当たった
-			player->Dead(); // プレイヤーを死亡状態に
-
-			// 赤いエフェクトを生成
-			ExplosionEffect* effect = new ExplosionEffect(player->GetPos(), 100);
-			effect->SetCharaColor(GetColor(255, 0, 0)); // 赤色に設定
-			AddObject(effect);
-
-			break; // プレイヤーは一度死んだら終わり
-		}
 	}
 }
 
